@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="lo">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ສຸກສັນວັນເກີດ ເອື້ອຍໜິງ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Lao:wght@500;700&family=Noto+Sans+Lao+Looped:wght@400;600&display=swap">
+<style>
+  /* Layout: one small card on a blush ground; tap the candle to blow it out, press the button for one wish at a time. */
+  /* Deliberately one look (white + pink) in every theme. */
+  :root {
+    --bg: #ffffff;
+    --bg-pink: #ffe4ee;
+    --card: #ffffff;
+    --ink: #4a2333;
+    --muted: #a0687e;
+    --accent: #e0457b;
+    --accent-2: #ff8fb4;
+    --on-accent: #ffffff;
+    --accent-soft: #fff0f5;
+    --line: #ffd1e1;
+    --shadow: rgba(224, 69, 123, 0.14);
+    --frost: #ffffff;
+    --sponge: #ffb3cb;
+    --plate: #ffe1ec;
+    --flame: #f5a742;
+    --flame-core: #fff3cf;
+    --display: "Noto Serif Lao", "Phetsarath OT", "Saysettha OT", serif;
+    --body: "Noto Sans Lao Looped", "Noto Sans Lao", "Phetsarath OT", "Saysettha OT", sans-serif;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 12% 8%, var(--bg-pink) 0, transparent 38%),
+      radial-gradient(circle at 92% 30%, var(--bg-pink) 0, transparent 34%),
+      radial-gradient(circle at 30% 100%, var(--bg-pink) 0, transparent 40%),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.7;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 28px 40px;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    width: 100%;
+    max-width: 340px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: 0 10px 30px var(--shadow);
+    padding: 20px 20px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 27px;
+    line-height: 1.35;
+    color: var(--accent);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  /* cake */
+  .cake-btn { background: none; border: 0; padding: 2px; cursor: pointer; border-radius: 12px; line-height: 0; }
+  .cake-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .cake-btn svg { width: 104px; height: auto; display: block; }
+  .flame { transform-origin: 75px 38px; animation: flicker 1.6s ease-in-out infinite; transition: opacity .35s, transform .35s; }
+  .out .flame { opacity: 0; transform: scale(.2) translateY(6px); animation: none; }
+  .smoke { opacity: 0; }
+  .out .smoke { animation: smoke 1.8s ease-out forwards; }
+  @keyframes flicker { 0%, 100% { transform: scale(1) rotate(-2deg); } 50% { transform: scale(1.06, .95) rotate(2deg); } }
+  @keyframes smoke { 0% { opacity: .55; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-18px); } }
+  .hint { font-size: 12.5px; color: var(--muted); margin-top: -6px; }
+  .hint.wished { color: var(--accent); font-weight: 600; }
+
+  .msg { margin: 0; max-width: 30ch; }
+
+  /* wish button */
+  .wish {
+    width: 100%;
+    background: var(--accent-soft);
+    border: 1px dashed var(--line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    min-height: 3.6em;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600;
+  }
+  .wish.empty { font-weight: 400; color: var(--muted); font-size: 13.5px; }
+  .wish.pop { animation: pop .35s ease-out; }
+  @keyframes pop { 0% { transform: scale(.96); opacity: .4; } 100% { transform: scale(1); opacity: 1; } }
+  .btn-row { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .press {
+    font: inherit; font-weight: 600; font-size: 15px;
+    color: var(--on-accent); background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    box-shadow: 0 4px 12px var(--shadow);
+    border: 0; border-radius: 999px; padding: 8px 22px; cursor: pointer;
+    transition: transform .1s;
+  }
+  .press:active { transform: scale(.95); }
+  .press:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .heart {
+    position: absolute; left: 50%; top: 0; pointer-events: none;
+    color: var(--accent); font-size: 18px; line-height: 1;
+    animation: rise 1.1s ease-out forwards;
+  }
+  @keyframes rise { 0% { opacity: 1; transform: translate(-50%, 0) scale(.8); } 100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), -46px) scale(1.2); } }
+
+  .sign { font-size: 13px; color: var(--muted); }
+  .sign strong { color: var(--ink); font-weight: 600; }
+
+  canvas#petals { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flame, .out .smoke, .wish.pop, .heart { animation: none; }
+    .heart { display: none; }
+  }
+</style>
+
+</head>
+<body>
+<main class="card" id="card">
+  <canvas id="petals" aria-hidden="true"></canvas>
+
+  <h1>ສຸກສັນວັນເກີດ</h1>
+
+  <button class="cake-btn" id="cake" type="button" aria-label="ແຕະເພື່ອເປົ່າທຽນ">
+    <svg viewBox="0 0 150 120" aria-hidden="true">
+      <path class="smoke" d="M75 36 q-5 -7 0 -13 q5 -6 0 -12" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round"/>
+      <g class="flame">
+        <path d="M75 16 C82 26 83 32 75 39 C67 32 68 26 75 16 Z" fill="var(--flame)"/>
+        <path d="M75 26 C78 30 78 34 75 37 C72 34 72 30 75 26 Z" fill="var(--flame-core)"/>
+      </g>
+      <rect x="71" y="39" width="8" height="24" rx="2" fill="var(--accent)"/>
+      <line x1="75" y1="36" x2="75" y2="40" stroke="var(--ink)" stroke-width="1.5"/>
+      <rect x="30" y="63" width="90" height="44" rx="8" fill="var(--sponge)"/>
+      <path d="M30 72 q0 -9 9 -9 h72 q9 0 9 9 v4 q-7.5 7 -15 0 q-7.5 7 -15 0 q-7.5 7 -15 0 q-7.5 7 -15 0 q-7.5 7 -15 0 q-7.5 7 -15 0 z" fill="var(--frost)"/>
+      <circle cx="48" cy="92" r="2.4" fill="var(--card)"/>
+      <circle cx="75" cy="96" r="2.4" fill="var(--card)"/>
+      <circle cx="102" cy="92" r="2.4" fill="var(--card)"/>
+      <ellipse cx="75" cy="110" rx="58" ry="7" fill="var(--plate)"/>
+    </svg>
+  </button>
+  <div class="hint" id="hint" aria-live="polite">ອະທິຖານ ແລ້ວແຕະທຽນເພື່ອເປົ່າ</div>
+
+  <p class="msg">ຂໍໃຫ້ເອື້ອຍໜິງສຸຂະພາບແຂງແຮງ ງາມຂຶ້ນທຸກມື້ ມີຄວາມສຸກຫຼາຍໆ ທຸກແຄມເປນທະລຸເປົ້າ. ຂອບໃຈທີ່ເປັນຫົວໜ້າທີ່ໃຈດີສະເໝີ.</p>
+
+  <div class="wish empty" id="wish" aria-live="polite">ມີພອນ 12 ຂໍ້ ລໍຖ້າເອື້ອຍກົດຢູ່</div>
+  <div class="btn-row" id="btnRow">
+    <button class="press" id="press" type="button">ກົດຮັບພອນ</button>
+    <span class="count" id="count">0 / 12</span>
+  </div>
+
+  <div class="sign">ດ້ວຍຮັກ ຈາກ <strong>ນ້ອງໆ ທີມ Marketing</strong></div>
+</main>
+
+<script>
+(function () {
+  var wishes = [
+    'ຂໍໃຫ້ງາມຂຶ້ນທຸກມື້',
+    'ຂໍໃຫ້ມີໜຸ່ມຫຼໍ່ໆ ມາຕໍ່ແຖວຈີບ',
+    'ຂໍໃຫ້ລວຍໆ ເງິນເດືອນຂຶ້ນ',
+    'ຂໍໃຫ້ຜິວໃສ ໜ້າອ່ອນກວ່າອາຍຸ',
+    'ຂໍໃຫ້ທຸກໂພສປັງ ຍອດ Like ລົ້ນ',
+    'ຂໍໃຫ້ໄດ້ແຟນຫຼໍ່ ລວຍ ແລະ ໃຈດີ ຄົບສູດ',
+    'ຂໍໃຫ້ກິນຫຍັງກໍບໍ່ຕຸ້ຍ',
+    'ຍອດໜຸ່ມທັກ Inbox: ທະລຸເປົ້າ',
+    'ຂໍໃຫ້ໄດ້ພັກຜ່ອນ ແລະ ໄປທ່ຽວຫຼາຍໆ',
+    'ຖ່າຍຮູບມຸມໃດກໍງາມ ບໍ່ຕ້ອງແຕ່ງ',
+    'KPI ຄວາມສຸກປີນີ້: ↑ 100%',
+    'ອາຍຸ: ຂໍ້ມູນລັບ ບໍ່ຕ້ອງລາຍງານ'
+  ];
+  var i = 0;
+  var cake = document.getElementById('cake');
+  var hint = document.getElementById('hint');
+  var wish = document.getElementById('wish');
+  var press = document.getElementById('press');
+  var count = document.getElementById('count');
+  var btnRow = document.getElementById('btnRow');
+  var canvas = document.getElementById('petals');
+  var card = document.getElementById('card');
+  var ctx = canvas.getContext('2d');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pieces = [], running = false;
+
+  function color(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#c45';
+  }
+
+  function petals() {
+    if (reduce) return;
+    var d = window.devicePixelRatio || 1;
+    canvas.width = card.clientWidth * d; canvas.height = card.clientHeight * d;
+    ctx.setTransform(d, 0, 0, d, 0, 0);
+    var cols = [color('--accent'), color('--sponge'), color('--flame')];
+    pieces = [];
+    for (var k = 0; k < 28; k++) {
+      pieces.push({
+        x: Math.random() * card.clientWidth, y: -20 - Math.random() * 200,
+        r: 2.5 + Math.random() * 3, vy: 0.7 + Math.random() * 1,
+        sway: Math.random() * 6.28, rot: Math.random() * 6.28, c: cols[k % 3]
+      });
+    }
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }
+
+  function tick() {
+    var h = card.clientHeight, alive = 0;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(function (p) {
+      p.y += p.vy; p.sway += 0.03; p.rot += 0.02;
+      if (p.y < h + 10) alive++;
+      ctx.save();
+      ctx.translate(p.x + Math.sin(p.sway) * 12, p.y); ctx.rotate(p.rot);
+      ctx.globalAlpha = 0.8; ctx.fillStyle = p.c;
+      ctx.beginPath(); ctx.ellipse(0, 0, p.r, p.r * 0.6, 0, 0, 6.29); ctx.fill();
+      ctx.restore();
+    });
+    if (alive) requestAnimationFrame(tick);
+    else { running = false; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+  }
+
+  cake.addEventListener('click', function () {
+    if (cake.classList.toggle('out')) {
+      cake.setAttribute('aria-label', 'ແຕະເພື່ອຈູດທຽນໃໝ່');
+      hint.textContent = 'ຂໍໃຫ້ພອນທີ່ຂໍໄວ້ ສົມຫວັງ';
+      hint.classList.add('wished');
+      petals();
+    } else {
+      cake.setAttribute('aria-label', 'ແຕະເພື່ອເປົ່າທຽນ');
+      hint.textContent = 'ອະທິຖານ ແລ້ວແຕະທຽນເພື່ອເປົ່າ';
+      hint.classList.remove('wished');
+    }
+  });
+
+  press.addEventListener('click', function () {
+    wish.textContent = wishes[i];
+    wish.classList.remove('empty', 'pop');
+    void wish.offsetWidth;
+    wish.classList.add('pop');
+    i++;
+    count.textContent = i + ' / ' + wishes.length;
+    if (i >= wishes.length) {
+      press.textContent = 'ເລີ່ມໃໝ່';
+      i = 0;
+      petals();
+    } else {
+      press.textContent = 'ກົດອີກ';
+    }
+    if (!reduce) {
+      var h = document.createElement('span');
+      h.className = 'heart';
+      h.textContent = '♥';
+      h.style.setProperty('--dx', (Math.random() * 40 - 20) + 'px');
+      btnRow.appendChild(h);
+      setTimeout(function () { h.remove(); }, 1200);
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
